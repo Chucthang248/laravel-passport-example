@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db  
+    ports:
+      - 21252:80
+    links:
+      - db
+    networks:
+      - api-network-test1
+  db:
+      image: postgres:alpine3.16
+      environment:
+        POSTGRES_HOST_AUTH_METHOD: trust
+        POSTGRES_DB: jobsearch
+        POSTGRES_USER: jobsearch
+        POSTGRES_PASSWORD: jobsearch
+      ports:
+        - "21253:5432"
+      networks:
+        - api-network-test1
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 21254:8080
+    links:
+      - db
+    networks:
+      - api-network-test1
+
+networks:
+  api-network-test1:
+    driver: bridge
+    
